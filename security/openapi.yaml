@@ -1,0 +1,550 @@
+openapi: 3.1.0
+info:
+  title: Security Service API
+  version: 1.1.0
+  summary: REST API for the Security microservice of the Museum Security System.
+  description: |
+    Public REST API of the Security microservice.
+
+    This microservice owns the entities `Alert` and `Incident`.
+    `POST /alerts` is the main entry point for incoming security signals.
+    Every stored alert creates exactly one new incident.
+
+    Alerts are intentionally append-only: they can be created and read, but not changed or deleted.
+    This keeps the audit trail intact and documents the security workflow clearly.
+servers:
+  - url: http://localhost:3002
+    description: Local development server
+
+tags:
+  - name: Service
+    description: Entry point and service metadata
+  - name: Alerts
+    description: Operations for alerts
+  - name: Incidents
+    description: Operations for incidents
+
+paths:
+  /:
+    get:
+      tags: [Service]
+      summary: Get service entry point
+      operationId: getServiceIndex
+      responses:
+        '200':
+          description: Service metadata and top-level links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityServiceIndex'
+
+  /alerts:
+    get:
+      tags: [Alerts]
+      summary: List all alerts
+      operationId: listAlerts
+      description: Returns all stored alerts for audit and troubleshooting purposes.
+      responses:
+        '200':
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alert'
+    post:
+      tags: [Alerts]
+      summary: Create an alert and automatically create exactly one incident
+      operationId: createAlert
+      description: |
+        Main API path for automated incident creation.
+
+        Processing rules:
+        - The alert is validated and stored.
+        - The severity is derived from the alert type.
+        - A brand-new incident is created with status `open`.
+        - The new incident is linked to exactly this alert.
+        - No correlation with existing incidents is performed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertCreateRequest'
+      responses:
+        '201':
+          description: Alert stored and exactly one incident created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertCreationResult'
+        '400':
+          description: Invalid request data, invalid enum value or exhibit-room mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Referenced room or exhibit does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /alerts/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Alerts]
+      summary: Get one alert
+      operationId: getAlert
+      responses:
+        '200':
+          description: Alert details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /incidents:
+    get:
+      tags: [Incidents]
+      summary: List all incidents
+      operationId: listIncidents
+      responses:
+        '200':
+          description: List of incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Incident'
+    post:
+      tags: [Incidents]
+      summary: Create a manual incident
+      operationId: createIncident
+      description: |
+        Creates a manual incident without going through the alert processing workflow.
+        `alertId` is optional for manually created incidents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualIncidentCreateRequest'
+      responses:
+        '201':
+          description: Manual incident created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '400':
+          description: Invalid request data, invalid enum value or invalid status payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Referenced room or exhibit does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /incidents/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Incidents]
+      summary: Get one incident
+      operationId: getIncident
+      responses:
+        '200':
+          description: Incident details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Incidents]
+      summary: Update incident status or description
+      operationId: updateIncident
+      description: |
+        Updates the mutable fields of an incident.
+        `resolvedAt` must only be present if `status` is `resolved`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentUpdateRequest'
+      responses:
+        '200':
+          description: Incident updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+        '400':
+          description: Invalid state transition or invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Incidents]
+      summary: Delete an incident
+      operationId: deleteIncident
+      responses:
+        '200':
+          description: Incident deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: Numeric identifier of the resource
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    NotFound:
+      description: Resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    Link:
+      type: object
+      additionalProperties: false
+      required: [href, method]
+      properties:
+        href:
+          type: string
+          description: Relative or absolute URL
+          examples: [/incidents/1]
+        method:
+          type: string
+          enum: [GET, POST, PUT, DELETE]
+
+    AlertLinks:
+      type: object
+      additionalProperties: false
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        incident:
+          $ref: '#/components/schemas/Link'
+
+    IncidentLinks:
+      type: object
+      additionalProperties: false
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        update:
+          $ref: '#/components/schemas/Link'
+        delete:
+          $ref: '#/components/schemas/Link'
+        alert:
+          $ref: '#/components/schemas/Link'
+
+    SecurityServiceIndex:
+      type: object
+      additionalProperties: false
+      required: [service, resources]
+      properties:
+        service:
+          type: string
+          const: security
+        resources:
+          type: object
+          additionalProperties: false
+          required: [alerts, incidents]
+          properties:
+            alerts:
+              $ref: '#/components/schemas/Link'
+            incidents:
+              $ref: '#/components/schemas/Link'
+
+    AlertType:
+      type: string
+      enum:
+        - motion
+        - glass_break
+        - unauthorized_access
+        - camera_offline
+        - object_moved
+        - window_open
+        - power_failure
+
+    IncidentStatus:
+      type: string
+      enum:
+        - open
+        - investigating
+        - confirmed
+        - false_alarm
+        - resolved
+
+    IncidentSeverity:
+      type: string
+      enum:
+        - low
+        - medium
+        - high
+        - critical
+
+    IncidentCause:
+      type: string
+      enum:
+        - visitor
+        - employee
+        - security
+        - cleaning_staff
+        - maintenance
+        - unknown
+
+    Alert:
+      type: object
+      additionalProperties: false
+      required: [id, roomId, type, cause, timestamp, message, createdAt]
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        roomId:
+          type: integer
+          minimum: 1
+        exhibitId:
+          type: integer
+          minimum: 1
+        type:
+          $ref: '#/components/schemas/AlertType'
+        cause:
+          $ref: '#/components/schemas/IncidentCause'
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of when the alert event happened
+        message:
+          type: string
+          minLength: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: Server-generated timestamp when the alert was stored
+        _links:
+          $ref: '#/components/schemas/AlertLinks'
+
+    AlertCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [roomId, type, cause, timestamp, message]
+      properties:
+        roomId:
+          type: integer
+          minimum: 1
+        exhibitId:
+          type: integer
+          minimum: 1
+        type:
+          $ref: '#/components/schemas/AlertType'
+        cause:
+          $ref: '#/components/schemas/IncidentCause'
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+          minLength: 1
+
+    Incident:
+      type: object
+      additionalProperties: false
+      required: [id, roomId, type, cause, status, severity, description, createdAt]
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        alertId:
+          type: integer
+          minimum: 1
+          description: Optional for manually created incidents
+        roomId:
+          type: integer
+          minimum: 1
+        exhibitId:
+          type: integer
+          minimum: 1
+        type:
+          $ref: '#/components/schemas/AlertType'
+        cause:
+          $ref: '#/components/schemas/IncidentCause'
+        status:
+          $ref: '#/components/schemas/IncidentStatus'
+        severity:
+          $ref: '#/components/schemas/IncidentSeverity'
+        description:
+          type: string
+          minLength: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: Server-generated timestamp when the incident was created
+        resolvedAt:
+          type: string
+          format: date-time
+        _links:
+          $ref: '#/components/schemas/IncidentLinks'
+      allOf:
+        - if:
+            properties:
+              status:
+                const: resolved
+            required: [status]
+          then:
+            required: [resolvedAt]
+
+    ManualIncidentCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [roomId, type, cause, status, severity, description]
+      properties:
+        alertId:
+          type: integer
+          minimum: 1
+          description: Optional link to an alert for manually created incidents
+        roomId:
+          type: integer
+          minimum: 1
+        exhibitId:
+          type: integer
+          minimum: 1
+        type:
+          $ref: '#/components/schemas/AlertType'
+        cause:
+          $ref: '#/components/schemas/IncidentCause'
+        status:
+          $ref: '#/components/schemas/IncidentStatus'
+        severity:
+          $ref: '#/components/schemas/IncidentSeverity'
+        description:
+          type: string
+          minLength: 1
+        resolvedAt:
+          type: string
+          format: date-time
+      allOf:
+        - if:
+            properties:
+              status:
+                const: resolved
+            required: [status]
+          then:
+            required: [resolvedAt]
+        - if:
+            properties:
+              status:
+                enum: [open, investigating, confirmed, false_alarm]
+            required: [status]
+          then:
+            not:
+              required: [resolvedAt]
+
+    IncidentUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [status, description]
+      properties:
+        status:
+          $ref: '#/components/schemas/IncidentStatus'
+        description:
+          type: string
+          minLength: 1
+        resolvedAt:
+          type: string
+          format: date-time
+      allOf:
+        - if:
+            properties:
+              status:
+                const: resolved
+            required: [status]
+          then:
+            required: [resolvedAt]
+        - if:
+            properties:
+              status:
+                enum: [open, investigating, confirmed, false_alarm]
+            required: [status]
+          then:
+            not:
+              required: [resolvedAt]
+
+    AlertCreationResult:
+      type: object
+      additionalProperties: false
+      required: [alert, incident]
+      properties:
+        alert:
+          $ref: '#/components/schemas/Alert'
+        incident:
+          $ref: '#/components/schemas/Incident'
+
+    DeleteResult:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Deleted successfully
+
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [status, error, message]
+      properties:
+        status:
+          type: integer
+          minimum: 400
+          maximum: 499
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'

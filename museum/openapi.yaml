@@ -1,0 +1,474 @@
+openapi: 3.1.0
+info:
+  title: Museum Service API
+  version: 1.1.0
+  summary: REST API for the Museum microservice of the Museum Security System.
+  description: |
+    Public REST API of the Museum microservice.
+
+    This microservice owns the entities `Room` and `Exhibit`.
+    It provides collection URLs, item URLs and one room-specific subcollection for exhibits.
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+
+tags:
+  - name: Service
+    description: Entry point and service metadata
+  - name: Rooms
+    description: Operations for rooms
+  - name: Exhibits
+    description: Operations for exhibits
+
+paths:
+  /:
+    get:
+      tags: [Service]
+      summary: Get service entry point
+      operationId: getServiceIndex
+      responses:
+        '200':
+          description: Service metadata and top-level links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MuseumServiceIndex'
+
+  /rooms:
+    get:
+      tags: [Rooms]
+      summary: List all rooms
+      operationId: listRooms
+      responses:
+        '200':
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+    post:
+      tags: [Rooms]
+      summary: Create a room
+      operationId: createRoom
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomCreateRequest'
+      responses:
+        '201':
+          description: Room created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /rooms/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Rooms]
+      summary: Get one room
+      operationId: getRoom
+      responses:
+        '200':
+          description: Room details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Rooms]
+      summary: Replace a room
+      operationId: replaceRoom
+      description: Replaces the room resource with the provided representation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomReplaceRequest'
+      responses:
+        '200':
+          description: Room replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Rooms]
+      summary: Delete a room
+      operationId: deleteRoom
+      responses:
+        '200':
+          description: Room deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rooms/{id}/exhibits:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Exhibits]
+      summary: List exhibits of one room
+      operationId: listRoomExhibits
+      responses:
+        '200':
+          description: Exhibits in the given room
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exhibit'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /exhibits:
+    get:
+      tags: [Exhibits]
+      summary: List all exhibits
+      operationId: listExhibits
+      responses:
+        '200':
+          description: List of exhibits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exhibit'
+    post:
+      tags: [Exhibits]
+      summary: Create an exhibit
+      operationId: createExhibit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExhibitCreateRequest'
+      responses:
+        '201':
+          description: Exhibit created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exhibit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Referenced room does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /exhibits/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Exhibits]
+      summary: Get one exhibit
+      operationId: getExhibit
+      responses:
+        '200':
+          description: Exhibit details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exhibit'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Exhibits]
+      summary: Replace an exhibit
+      operationId: replaceExhibit
+      description: |
+        Replaces the exhibit resource with the provided representation.
+        `createdAt` is server-generated and must not be supplied by the client.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExhibitReplaceRequest'
+      responses:
+        '200':
+          description: Exhibit replaced
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exhibit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Exhibit or referenced room does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Exhibits]
+      summary: Delete an exhibit
+      operationId: deleteExhibit
+      responses:
+        '200':
+          description: Exhibit deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: Numeric identifier of the resource
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    BadRequest:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    Link:
+      type: object
+      additionalProperties: false
+      required: [href, method]
+      properties:
+        href:
+          type: string
+          description: Relative or absolute URL
+          examples: [/rooms/1]
+        method:
+          type: string
+          enum: [GET, POST, PUT, DELETE]
+
+    RoomLinks:
+      type: object
+      additionalProperties: false
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        update:
+          $ref: '#/components/schemas/Link'
+        delete:
+          $ref: '#/components/schemas/Link'
+        exhibits:
+          $ref: '#/components/schemas/Link'
+
+    ExhibitLinks:
+      type: object
+      additionalProperties: false
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        update:
+          $ref: '#/components/schemas/Link'
+        delete:
+          $ref: '#/components/schemas/Link'
+        room:
+          $ref: '#/components/schemas/Link'
+
+    MuseumServiceIndex:
+      type: object
+      additionalProperties: false
+      required: [service, resources]
+      properties:
+        service:
+          type: string
+          const: museum
+        resources:
+          type: object
+          additionalProperties: false
+          required: [rooms, exhibits]
+          properties:
+            rooms:
+              $ref: '#/components/schemas/Link'
+            exhibits:
+              $ref: '#/components/schemas/Link'
+
+    Room:
+      type: object
+      additionalProperties: false
+      required: [id, name, floor, createdAt]
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        floor:
+          type: integer
+        theme:
+          type: string
+        isMonitored:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+          description: Server-generated timestamp when the room resource was created
+        _links:
+          $ref: '#/components/schemas/RoomLinks'
+
+    RoomCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [name, floor]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        floor:
+          type: integer
+        theme:
+          type: string
+        isMonitored:
+          type: boolean
+          default: false
+
+    RoomReplaceRequest:
+      type: object
+      additionalProperties: false
+      required: [name, floor]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        floor:
+          type: integer
+        theme:
+          type: string
+        isMonitored:
+          type: boolean
+
+    Exhibit:
+      type: object
+      additionalProperties: false
+      required: [id, name, roomId, createdAt]
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        artist:
+          type: string
+        estimatedValue:
+          type: number
+          minimum: 0
+        roomId:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: Server-generated timestamp when the exhibit resource was created
+        _links:
+          $ref: '#/components/schemas/ExhibitLinks'
+
+    ExhibitCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [name, roomId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        artist:
+          type: string
+        estimatedValue:
+          type: number
+          minimum: 0
+        roomId:
+          type: integer
+          minimum: 1
+
+    ExhibitReplaceRequest:
+      type: object
+      additionalProperties: false
+      required: [name, roomId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        artist:
+          type: string
+        estimatedValue:
+          type: number
+          minimum: 0
+        roomId:
+          type: integer
+          minimum: 1
+
+    DeleteResult:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Deleted successfully
+
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [status, error, message]
+      properties:
+        status:
+          type: integer
+          minimum: 400
+          maximum: 499
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
