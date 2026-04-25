@@ -1,0 +1,25 @@
+{
+  "name": "security",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "watch": "nodemon src/main.js",
+    "debug": "node --inspect-brk src/main.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "http-terminator": "^3.2.0",
+    "logging": "^4.2.0",
+    "qs": "^6.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
