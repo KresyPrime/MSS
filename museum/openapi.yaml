@@ -9,7 +9,7 @@ info:
     This microservice owns the entities `Room` and `Exhibit`.
     It provides collection URLs, item URLs and one room-specific subcollection for exhibits.
 servers:
-  - url: http://localhost:3001
+  - url: http://localhost:9001
     description: Local development server
 
 tags:
@@ -33,6 +33,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MuseumServiceIndex'
+
+  /health:
+    get:
+      tags: [Service]
+      summary: Get service health
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [service, status]
+                properties:
+                  service:
+                    type: string
+                    const: museum
+                  status:
+                    type: string
+                    const: ok
 
   /rooms:
     get:

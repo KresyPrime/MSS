@@ -19,7 +19,10 @@ export function logRequests(req, res, next) {
 export function handleErrors(err, req, res, next) {
     console.error(err);
 
-    res.status(err.httpStatus || 500).json({
+    const status = err.httpStatus || 500;
+
+    res.status(status).json({
+        status,
         error: err.name || "InternalServerError",
         message: err.message || "Unbekannter Fehler",
     });

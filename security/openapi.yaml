@@ -13,7 +13,7 @@ info:
     Alerts are intentionally append-only: they can be created and read, but not changed or deleted.
     This keeps the audit trail intact and documents the security workflow clearly.
 servers:
-  - url: http://localhost:3002
+  - url: http://localhost:9002
     description: Local development server
 
 tags:
@@ -37,6 +37,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SecurityServiceIndex'
+
+  /health:
+    get:
+      tags: [Service]
+      summary: Get service health
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [service, status]
+                properties:
+                  service:
+                    type: string
+                    const: security
+                  status:
+                    type: string
+                    const: ok
 
   /alerts:
     get:
