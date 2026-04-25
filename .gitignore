@@ -57,6 +57,17 @@ tmp/
 temp/
 
 # =========================
+# Portfolio / Aufgabenmaterial
+# =========================
+Portfolioaufgaben*.pdf
+Portfolio-Aufgabe*.zip
+Portfolio-Aufgabe*/
+Portfolioaufgabe*.zip
+Portfolioaufgabe*/
+Portfolio-Aufgaben*.zip
+Portfolio-Aufgaben*/
+
+# =========================
 # Optional: OpenAPI Generated Files
 # (falls du generierte Clients nutzt)
 # =========================
