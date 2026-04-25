@@ -42,6 +42,9 @@ Thumbs.db
 # VS Code
 .vscode/
 
+# Codex local workspace state
+.codex
+
 # JetBrains
 .idea/
 
