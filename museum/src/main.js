@@ -3,7 +3,7 @@ import express from "express";
 
 import { initializeDatabase } from "./database.js";
 import { closeMqtt, connectMqtt, publishEvent } from "./mqtt.js";
-import { logRequests, handleErrors } from "./middleware.js";
+import { allowCors, logRequests, handleErrors } from "./middleware.js";
 import { ExhibitRepository } from "./repositories/exhibitRepository.js";
 import { RoomRepository } from "./repositories/roomRepository.js";
 import { ExhibitService } from "./services/exhibitService.js";
@@ -33,6 +33,7 @@ const eventPublisher = { publishEvent };
 const roomService = new RoomService(roomRepository, eventPublisher);
 const exhibitService = new ExhibitService(exhibitRepository, roomService, eventPublisher);
 
+app.use(allowCors);
 app.use(express.json());
 app.use(logRequests);
 

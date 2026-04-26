@@ -90,6 +90,7 @@ export function mapAlert(row) {
         createdAt: row.created_at,
         _links: {
             self: { href: `/alerts/${row.id}`, method: "GET" },
+            incidents: { href: `/alerts/${row.id}/incidents`, method: "GET" },
         },
     };
 }

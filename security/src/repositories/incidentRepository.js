@@ -29,6 +29,19 @@ export class IncidentRepository {
     }
 
     /**
+     * Gibt alle Incidents zu einem Alert zurück.
+     * @param {number} alertId Alert-ID
+     * @returns {Promise<object[]>}
+     */
+    async findByAlertId(alertId) {
+        const rows = await this.db.all(
+            "SELECT * FROM incidents WHERE alert_id = ? ORDER BY id",
+            alertId,
+        );
+        return rows.map(mapIncident);
+    }
+
+    /**
      * Legt ein Incident an.
      * @param {object} incident Incidentdaten
      * @returns {Promise<object>}

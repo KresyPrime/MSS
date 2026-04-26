@@ -17,6 +17,10 @@ export function registerAlertController(app, alertService) {
     app.get("/alerts/:id", asyncHandler(async (req, res) => {
         res.status(200).json(await alertService.getAlert(parseId(req.params.id)));
     }));
+
+    app.get("/alerts/:id/incidents", asyncHandler(async (req, res) => {
+        res.status(200).json(await alertService.listIncidentsByAlert(parseId(req.params.id)));
+    }));
 }
 
 /**

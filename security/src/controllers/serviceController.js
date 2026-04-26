@@ -15,9 +15,13 @@ export function registerServiceController(app) {
 function getIndex(req, res) {
     res.status(200).json({
         service: "security",
-        resources: {
+        _links: {
+            self: { href: "/", method: "GET" },
+            health: { href: "/health", method: "GET" },
             alerts: { href: "/alerts", method: "GET" },
+            createAlert: { href: "/alerts", method: "POST" },
             incidents: { href: "/incidents", method: "GET" },
+            createIncident: { href: "/incidents", method: "POST" },
         },
     });
 }

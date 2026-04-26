@@ -324,23 +324,34 @@ components:
         room:
           $ref: '#/components/schemas/Link'
 
+    MuseumServiceLinks:
+      type: object
+      additionalProperties: false
+      required: [self, health, rooms, createRoom, exhibits, createExhibit]
+      properties:
+        self:
+          $ref: '#/components/schemas/Link'
+        health:
+          $ref: '#/components/schemas/Link'
+        rooms:
+          $ref: '#/components/schemas/Link'
+        createRoom:
+          $ref: '#/components/schemas/Link'
+        exhibits:
+          $ref: '#/components/schemas/Link'
+        createExhibit:
+          $ref: '#/components/schemas/Link'
+
     MuseumServiceIndex:
       type: object
       additionalProperties: false
-      required: [service, resources]
+      required: [service, _links]
       properties:
         service:
           type: string
           const: museum
-        resources:
-          type: object
-          additionalProperties: false
-          required: [rooms, exhibits]
-          properties:
-            rooms:
-              $ref: '#/components/schemas/Link'
-            exhibits:
-              $ref: '#/components/schemas/Link'
+        _links:
+          $ref: '#/components/schemas/MuseumServiceLinks'
 
     Room:
       type: object

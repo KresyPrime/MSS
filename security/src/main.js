@@ -3,7 +3,7 @@ import express from "express";
 
 import { initializeDatabase } from "./database.js";
 import { closeMqtt, connectMqtt, publishEvent } from "./mqtt.js";
-import { logRequests, handleErrors } from "./middleware.js";
+import { allowCors, logRequests, handleErrors } from "./middleware.js";
 import { AlertRepository } from "./repositories/alertRepository.js";
 import { IncidentRepository } from "./repositories/incidentRepository.js";
 import { registerAlertController } from "./controllers/alertController.js";
@@ -24,7 +24,7 @@ const databaseFile = process.env.DATABASE_FILE || "security.sqlite";
 const db = await initializeDatabase(databaseFile);
 const alertRepository = new AlertRepository(db);
 const incidentRepository = new IncidentRepository(db);
-const museumClient = new MuseumClient(process.env.MUSEUM_SERVICE_URL || "http://127.0.0.1:9001");
+const museumClient = new MuseumClient(process.env.MUSEUM_SERVICE_URL);
 const eventPublisher = { publishEvent };
 const museumEventService = new MuseumEventService(alertRepository, incidentRepository);
 const alertService = new AlertService(alertRepository, incidentRepository, museumClient, eventPublisher);
@@ -37,6 +37,7 @@ await connectMqtt({
     topicPrefix: process.env.MQTT_TOPIC_PREFIX,
 }, museumEventService);
 
+app.use(allowCors);
 app.use(express.json());
 app.use(logRequests);
 

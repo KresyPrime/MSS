@@ -15,9 +15,13 @@ export function registerServiceController(app) {
 function getIndex(req, res) {
     res.status(200).json({
         service: "museum",
-        resources: {
+        _links: {
+            self: { href: "/", method: "GET" },
+            health: { href: "/health", method: "GET" },
             rooms: { href: "/rooms", method: "GET" },
+            createRoom: { href: "/rooms", method: "POST" },
             exhibits: { href: "/exhibits", method: "GET" },
+            createExhibit: { href: "/exhibits", method: "POST" },
         },
     });
 }

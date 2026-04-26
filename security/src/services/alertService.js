@@ -38,7 +38,18 @@ export class AlertService {
     }
 
     /**
-     * Legt einen Alert an und erzeugt genau ein neues Incident.
+     * Gibt alle Incidents zu einem Alert zurück.
+     * @param {number} id Alert-ID
+     * @returns {Promise<object[]>}
+     */
+    async listIncidentsByAlert(id) {
+        const alert = await this.alertRepository.findById(id);
+        if (!alert) throwError("NotFound", "Alert wurde nicht gefunden.", 404);
+        return this.incidentRepository.findByAlertId(id);
+    }
+
+    /**
+     * Legt einen Alert an und erzeugt ein erstes Incident.
      * @param {object} data Request-Daten
      * @returns {Promise<object>}
      */
@@ -61,7 +72,7 @@ export class AlertService {
         await this.eventPublisher.publishEvent("created", "Alert", alert.id);
         await this.eventPublisher.publishEvent("created", "Incident", incident.id);
 
-        return { alert, incident };
+        return { alert, incidents: [incident] };
     }
 }
 

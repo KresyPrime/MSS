@@ -91,9 +91,11 @@ export class IncidentService {
             if (!Number.isInteger(data.alertId) || data.alertId < 1) {
                 throwError("BadRequest", "alertId muss eine positive Ganzzahl sein.", 400);
             }
-            if (!await this.alertRepository.findById(data.alertId)) {
+            const alert = await this.alertRepository.findById(data.alertId);
+            if (!alert) {
                 throwError("NotFound", "Der referenzierte Alert existiert nicht.", 404);
             }
+            validateAlertReference(alert, data);
         }
         if (!Number.isInteger(data.roomId) || data.roomId < 1) {
             throwError("BadRequest", "roomId muss eine positive Ganzzahl sein.", 400);
@@ -123,6 +125,22 @@ export class IncidentService {
             description: data.description.trim(),
             resolvedAt,
         };
+    }
+}
+
+/**
+ * Prüft, ob ein manuelles Incident zum verknüpften Alert passt.
+ * @param {object} alert Alertdaten
+ * @param {object} incident Incidentdaten
+ */
+function validateAlertReference(alert, incident) {
+    if (incident.roomId !== alert.roomId) {
+        throwError("BadRequest", "Das Incident muss zum Raum des Alerts gehören.", 400);
+    }
+
+    const alertExhibitId = alert.exhibitId;
+    if (alertExhibitId !== undefined && incident.exhibitId !== alertExhibitId) {
+        throwError("BadRequest", "Das Incident muss zum Exponat des Alerts gehören.", 400);
     }
 }
 
