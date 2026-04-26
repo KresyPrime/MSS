@@ -1,0 +1,35 @@
+services:
+  museum:
+    build:
+      context: ./museum
+    container_name: mss-museum
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: 9001
+      DATABASE_FILE: /data/museum.sqlite
+      MQTT_TOPIC_PREFIX: mss/events
+    ports:
+      - "9001:9001"
+    volumes:
+      - museum-data:/data
+
+  security:
+    build:
+      context: ./security
+    container_name: mss-security
+    environment:
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: 9002
+      DATABASE_FILE: /data/security.sqlite
+      MUSEUM_SERVICE_URL: http://museum:9001
+      MQTT_TOPIC_PREFIX: mss/events
+    ports:
+      - "9002:9002"
+    volumes:
+      - security-data:/data
+    depends_on:
+      - museum
+
+volumes:
+  museum-data:
+  security-data:
