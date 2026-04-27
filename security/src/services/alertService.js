@@ -7,7 +7,8 @@ import { ALERT_TYPES, INCIDENT_CAUSES, determineSeverity } from "./alertRuleEngi
 export class AlertService {
     /**
      * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository Incident-Repository
+     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
+     * Incident-Repository
      * @param {import("./museumClient.js").MuseumClient} museumClient Museum-Client
      * @param {{publishEvent: Function}} eventPublisher Event-Publisher
      */

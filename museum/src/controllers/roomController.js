@@ -1,4 +1,5 @@
 import { parseId } from "../utils.js";
+import { asyncHandler } from "../middleware.js";
 
 /**
  * Registriert Raum-Endpunkte.
@@ -31,13 +32,4 @@ export function registerRoomController(app, roomService, exhibitService) {
     app.get("/rooms/:id/exhibits", asyncHandler(async (req, res) => {
         res.status(200).json(await exhibitService.listExhibitsByRoom(parseId(req.params.id)));
     }));
-}
-
-/**
- * Leitet Fehler aus asynchronen Handlern an Express weiter.
- * @param {Function} handler HTTP-Handler
- * @returns {Function}
- */
-function asyncHandler(handler) {
-    return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }

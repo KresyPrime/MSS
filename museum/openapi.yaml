@@ -104,6 +104,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Room'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -139,6 +141,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -158,6 +162,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Exhibit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -215,6 +221,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Exhibit'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
@@ -256,6 +264,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeleteResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 

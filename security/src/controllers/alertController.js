@@ -1,4 +1,5 @@
 import { parseId } from "../utils.js";
+import { asyncHandler } from "../middleware.js";
 
 /**
  * Registriert Alert-Endpunkte.
@@ -21,13 +22,4 @@ export function registerAlertController(app, alertService) {
     app.get("/alerts/:id/incidents", asyncHandler(async (req, res) => {
         res.status(200).json(await alertService.listIncidentsByAlert(parseId(req.params.id)));
     }));
-}
-
-/**
- * Leitet Fehler aus asynchronen Handlern an Express weiter.
- * @param {Function} handler HTTP-Handler
- * @returns {Function}
- */
-function asyncHandler(handler) {
-    return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }

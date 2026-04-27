@@ -29,6 +29,15 @@ export function logRequests(req, res, next) {
 }
 
 /**
+ * Leitet Fehler aus asynchronen Handlern an Express weiter.
+ * @param {Function} handler HTTP-Handler
+ * @returns {Function}
+ */
+export function asyncHandler(handler) {
+    return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+}
+
+/**
  * Einheitliche Fehlerbehandlung.
  * @param {Error} err Fehlerobjekt
  * @param {import("express").Request} req HTTP-Request

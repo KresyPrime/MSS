@@ -9,7 +9,8 @@ const INCIDENT_SEVERITIES = ["low", "medium", "high", "critical"];
  */
 export class IncidentService {
     /**
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository Incident-Repository
+     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
+     * Incident-Repository
      * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
      * @param {import("./museumClient.js").MuseumClient} museumClient Museum-Client
      * @param {{publishEvent: Function}} eventPublisher Event-Publisher

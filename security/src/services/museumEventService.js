@@ -4,7 +4,8 @@
 export class MuseumEventService {
     /**
      * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository Incident-Repository
+     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
+     * Incident-Repository
      */
     constructor(alertRepository, incidentRepository) {
         this.alertRepository = alertRepository;

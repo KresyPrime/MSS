@@ -1,4 +1,5 @@
 import { parseId } from "../utils.js";
+import { asyncHandler } from "../middleware.js";
 
 /**
  * Registriert Exponat-Endpunkte.
@@ -26,13 +27,4 @@ export function registerExhibitController(app, exhibitService) {
         await exhibitService.deleteExhibit(parseId(req.params.id));
         res.status(200).json({ message: "Deleted successfully" });
     }));
-}
-
-/**
- * Leitet Fehler aus asynchronen Handlern an Express weiter.
- * @param {Function} handler HTTP-Handler
- * @returns {Function}
- */
-function asyncHandler(handler) {
-    return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }
