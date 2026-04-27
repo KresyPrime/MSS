@@ -1,6 +1,6 @@
 # Museum Security System
 
-Das Museum Security System ist eine kleine verteilte Backend-Anwendung fuer ein Museum. Der Museum Service verwaltet Räume und Exponate. Der Security Service verarbeitet Sicherheitsmeldungen und daraus entstehende Incidents.
+Das Museum Security System ist eine kleine verteilte Backend-Anwendung für ein Museum. Der Museum Service verwaltet Räume und Exponate. Der Security Service verarbeitet Sicherheitsmeldungen und daraus entstehende Incidents.
 
 Das System besteht aus zwei getrennten Microservices:
 
@@ -51,7 +51,7 @@ Falls mit `sudo` gestartet wurde:
 sudo docker compose down
 ```
 
-Die SQLite-Dateien liegen in Docker-Volumes. Zum Loeschen der Volumes:
+Die SQLite-Dateien liegen in Docker-Volumes. Zum Löschen der Volumes:
 
 ```bash
 docker compose down -v
@@ -66,4 +66,4 @@ museum/openapi.yaml
 security/openapi.yaml
 ```
 
-Die Dateien koennen im Swagger Editor importiert werden.
+Die Dateien können im Swagger Editor importiert werden.
