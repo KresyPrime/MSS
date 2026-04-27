@@ -1,12 +1,12 @@
 # Museum Security System
 
-Projekt fuer die Portfolioaufgabe in Verteilte Systeme.
+Das Museum Security System ist eine kleine verteilte Backend-Anwendung fuer ein Museum. Der Museum Service verwaltet Räume und Exponate. Der Security Service verarbeitet Sicherheitsmeldungen und daraus entstehende Incidents.
 
-Das System besteht aus zwei Microservices:
+Das System besteht aus zwei getrennten Microservices:
 
 | Service | Port | Aufgabe |
 | --- | ---: | --- |
-| Museum Service | `9001` | Verwaltung von Raeumen und Exponaten |
+| Museum Service | `9001` | Verwaltung von Räumen und Exponaten |
 | Security Service | `9002` | Verwaltung von Alerts und Incidents |
 
 Jeder Microservice besitzt eine eigene SQLite-Datenbank. Der Security Service greift nur lesend auf den Museum Service zu.
@@ -67,37 +67,3 @@ security/openapi.yaml
 ```
 
 Die Dateien koennen im Swagger Editor importiert werden.
-
-## Lokaler Start ohne Docker
-
-Nur falls Docker nicht verwendet wird.
-
-Museum Service:
-
-```bash
-cd museum
-cp .env.example .env
-npm ci
-npm start
-```
-
-Security Service in einem zweiten Terminal:
-
-```bash
-cd security
-cp .env.example .env
-npm ci
-npm start
-```
-
-## Hinweis zur Abgabe
-
-Vor dem Packen der Abgabe sollten keine `node_modules`-Ordner enthalten sein.
-
-Fuer Aufgabe 4a gehoert ausserdem ein kurzes Video zur Abgabe. Darin sollte gezeigt werden:
-
-- Aufbau der beiden Dockerfiles
-- Aufbau der `docker-compose.yml`
-- Start mit `docker compose up --build`
-- kurzer Aufruf der Healthchecks
-- Stoppen mit `docker compose down`
