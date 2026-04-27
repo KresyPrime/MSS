@@ -1,17 +1,9 @@
 import { isBlank, throwError } from "../utils.js";
 import { ALERT_TYPES, INCIDENT_CAUSES, determineSeverity } from "./alertRuleEngine.js";
 
-/**
- * Fachlogik für Alerts.
- */
+/** fachlogik für alerts. */
 export class AlertService {
-    /**
-     * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
-     * Incident-Repository
-     * @param {import("./museumClient.js").MuseumClient} museumClient Museum-Client
-     * @param {{publishEvent: Function}} eventPublisher Event-Publisher
-     */
+    /** erstellt den service. */
     constructor(alertRepository, incidentRepository, museumClient, eventPublisher) {
         this.alertRepository = alertRepository;
         this.incidentRepository = incidentRepository;
@@ -19,41 +11,26 @@ export class AlertService {
         this.eventPublisher = eventPublisher;
     }
 
-    /**
-     * Gibt alle Alerts zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle alerts zurück. */
     async listAlerts() {
         return this.alertRepository.findAll();
     }
 
-    /**
-     * Gibt einen Alert zurück.
-     * @param {number} id Alert-ID
-     * @returns {Promise<object>}
-     */
+    /** gibt einen alert zurück. */
     async getAlert(id) {
         const alert = await this.alertRepository.findById(id);
         if (!alert) throwError("NotFound", "Alert wurde nicht gefunden.", 404);
         return alert;
     }
 
-    /**
-     * Gibt alle Incidents zu einem Alert zurück.
-     * @param {number} id Alert-ID
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle incidents zu einem alert zurück. */
     async listIncidentsByAlert(id) {
         const alert = await this.alertRepository.findById(id);
         if (!alert) throwError("NotFound", "Alert wurde nicht gefunden.", 404);
         return this.incidentRepository.findByAlertId(id);
     }
 
-    /**
-     * Legt einen Alert an und erzeugt ein erstes Incident.
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** legt einen alert an und erzeugt das erste incident. */
     async createAlert(data) {
         const alertData = validateAlert(data);
         await this.museumClient.validateReferences(alertData.roomId, alertData.exhibitId);
@@ -77,11 +54,7 @@ export class AlertService {
     }
 }
 
-/**
- * Validiert Alertdaten.
- * @param {object} data Request-Daten
- * @returns {object}
- */
+/** validiert alertdaten. */
 function validateAlert(data) {
     if (!data || typeof data !== "object") {
         throwError("BadRequest", "Der Request-Body muss ein JSON-Objekt sein.", 400);

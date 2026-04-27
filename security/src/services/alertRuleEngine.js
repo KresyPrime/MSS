@@ -17,11 +17,7 @@ export const INCIDENT_CAUSES = [
     "unknown",
 ];
 
-/**
- * Bestimmt die Schwere eines Alerts.
- * @param {string} type Alert-Typ
- * @returns {string}
- */
+/** bestimmt die schwere eines alerts. */
 export function determineSeverity(type) {
     const severityByType = {
         camera_offline: "low",

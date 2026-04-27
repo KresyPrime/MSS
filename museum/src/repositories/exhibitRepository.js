@@ -1,28 +1,17 @@
-/**
- * Datenbankzugriff für Exponate.
- */
+/** datenbankzugriff für exponate. */
 export class ExhibitRepository {
-    /**
-     * @param {import("sqlite").Database} db sqlite-Datenbank
-     */
+    /** erstellt das repository. */
     constructor(db) {
         this.db = db;
     }
 
-    /**
-     * Gibt alle Exponate zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle exponate zurück. */
     async findAll() {
         const rows = await this.db.all("SELECT * FROM exhibits ORDER BY id");
         return rows.map(mapExhibit);
     }
 
-    /**
-     * Gibt alle Exponate eines Raumes zurück.
-     * @param {number} roomId Raum-ID
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle exponate eines raums zurück. */
     async findByRoomId(roomId) {
         const rows = await this.db.all(
             "SELECT * FROM exhibits WHERE room_id = ? ORDER BY id",
@@ -31,21 +20,13 @@ export class ExhibitRepository {
         return rows.map(mapExhibit);
     }
 
-    /**
-     * Sucht ein Exponat anhand seiner ID.
-     * @param {number} id Exponat-ID
-     * @returns {Promise<object|undefined>}
-     */
+    /** sucht ein exponat per id. */
     async findById(id) {
         const row = await this.db.get("SELECT * FROM exhibits WHERE id = ?", id);
         return row ? mapExhibit(row) : undefined;
     }
 
-    /**
-     * Legt ein Exponat an.
-     * @param {object} exhibit Exponatdaten
-     * @returns {Promise<object>}
-     */
+    /** legt ein exponat an. */
     async create(exhibit) {
         const result = await this.db.run(
             "INSERT INTO exhibits (name, artist, estimated_value, room_id, created_at) VALUES (?, ?, ?, ?, ?)",
@@ -59,12 +40,7 @@ export class ExhibitRepository {
         return this.findById(result.lastID);
     }
 
-    /**
-     * Ersetzt ein Exponat vollständig.
-     * @param {number} id Exponat-ID
-     * @param {object} exhibit Neue Exponatdaten
-     * @returns {Promise<object|undefined>}
-     */
+    /** ersetzt ein exponat. */
     async replace(id, exhibit) {
         const result = await this.db.run(
             "UPDATE exhibits SET name = ?, artist = ?, estimated_value = ?, room_id = ? WHERE id = ?",
@@ -78,22 +54,14 @@ export class ExhibitRepository {
         return result.changes === 0 ? undefined : this.findById(id);
     }
 
-    /**
-     * Löscht ein Exponat.
-     * @param {number} id Exponat-ID
-     * @returns {Promise<boolean>}
-     */
+    /** löscht ein exponat. */
     async delete(id) {
         const result = await this.db.run("DELETE FROM exhibits WHERE id = ?", id);
         return result.changes > 0;
     }
 }
 
-/**
- * Wandelt eine Datenbankzeile in die API-Darstellung um.
- * @param {object} row Datenbankzeile
- * @returns {object}
- */
+/** wandelt eine datenbankzeile in die API-darstellung um. */
 export function mapExhibit(row) {
     return {
         id: row.id,

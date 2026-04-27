@@ -1,38 +1,23 @@
-/**
- * Datenbankzugriff für Incidents.
- */
+/** datenbankzugriff für incidents. */
 export class IncidentRepository {
-    /**
-     * @param {import("sqlite").Database} db sqlite-Datenbank
-     */
+    /** erstellt das repository. */
     constructor(db) {
         this.db = db;
     }
 
-    /**
-     * Gibt alle Incidents zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle incidents zurück. */
     async findAll() {
         const rows = await this.db.all("SELECT * FROM incidents ORDER BY id");
         return rows.map(mapIncident);
     }
 
-    /**
-     * Sucht ein Incident anhand seiner ID.
-     * @param {number} id Incident-ID
-     * @returns {Promise<object|undefined>}
-     */
+    /** sucht ein incident per id. */
     async findById(id) {
         const row = await this.db.get("SELECT * FROM incidents WHERE id = ?", id);
         return row ? mapIncident(row) : undefined;
     }
 
-    /**
-     * Gibt alle Incidents zu einem Alert zurück.
-     * @param {number} alertId Alert-ID
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle incidents zu einem alert zurück. */
     async findByAlertId(alertId) {
         const rows = await this.db.all(
             "SELECT * FROM incidents WHERE alert_id = ? ORDER BY id",
@@ -41,11 +26,7 @@ export class IncidentRepository {
         return rows.map(mapIncident);
     }
 
-    /**
-     * Legt ein Incident an.
-     * @param {object} incident Incidentdaten
-     * @returns {Promise<object>}
-     */
+    /** legt ein incident an. */
     async create(incident) {
         const result = await this.db.run(
             `INSERT INTO incidents (
@@ -66,12 +47,7 @@ export class IncidentRepository {
         return this.findById(result.lastID);
     }
 
-    /**
-     * Aktualisiert Status und Beschreibung.
-     * @param {number} id Incident-ID
-     * @param {object} incident Neue Incidentdaten
-     * @returns {Promise<object|undefined>}
-     */
+    /** aktualisiert status und beschreibung. */
     async update(id, incident) {
         const result = await this.db.run(
             "UPDATE incidents SET status = ?, description = ?, resolved_at = ? WHERE id = ?",
@@ -84,31 +60,19 @@ export class IncidentRepository {
         return result.changes === 0 ? undefined : this.findById(id);
     }
 
-    /**
-     * Löscht ein Incident.
-     * @param {number} id Incident-ID
-     * @returns {Promise<boolean>}
-     */
+    /** löscht ein incident. */
     async delete(id) {
         const result = await this.db.run("DELETE FROM incidents WHERE id = ?", id);
         return result.changes > 0;
     }
 
-    /**
-     * Löscht Incidents eines gelöschten Raums.
-     * @param {number} roomId Raum-ID
-     * @returns {Promise<number>}
-     */
+    /** löscht incidents eines gelöschten raums. */
     async deleteByRoomId(roomId) {
         const result = await this.db.run("DELETE FROM incidents WHERE room_id = ?", roomId);
         return result.changes;
     }
 
-    /**
-     * Entfernt den Bezug auf ein gelöschtes Exponat.
-     * @param {number} exhibitId Exponat-ID
-     * @returns {Promise<number>}
-     */
+    /** entfernt den bezug auf ein gelöschtes exponat. */
     async clearExhibitId(exhibitId) {
         const result = await this.db.run(
             "UPDATE incidents SET exhibit_id = NULL WHERE exhibit_id = ?",
@@ -118,11 +82,7 @@ export class IncidentRepository {
     }
 }
 
-/**
- * Wandelt eine Datenbankzeile in die API-Darstellung um.
- * @param {object} row Datenbankzeile
- * @returns {object}
- */
+/** wandelt eine datenbankzeile in die API-darstellung um. */
 export function mapIncident(row) {
     return {
         id: row.id,

@@ -1,38 +1,23 @@
-/**
- * Datenbankzugriff für Alerts.
- */
+/** datenbankzugriff für alerts. */
 export class AlertRepository {
-    /**
-     * @param {import("sqlite").Database} db sqlite-Datenbank
-     */
+    /** erstellt das repository. */
     constructor(db) {
         this.db = db;
     }
 
-    /**
-     * Gibt alle Alerts zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle alerts zurück. */
     async findAll() {
         const rows = await this.db.all("SELECT * FROM alerts ORDER BY id");
         return rows.map(mapAlert);
     }
 
-    /**
-     * Sucht einen Alert anhand seiner ID.
-     * @param {number} id Alert-ID
-     * @returns {Promise<object|undefined>}
-     */
+    /** sucht einen alert per id. */
     async findById(id) {
         const row = await this.db.get("SELECT * FROM alerts WHERE id = ?", id);
         return row ? mapAlert(row) : undefined;
     }
 
-    /**
-     * Legt einen Alert an.
-     * @param {object} alert Alertdaten
-     * @returns {Promise<object>}
-     */
+    /** legt einen alert an. */
     async create(alert) {
         const result = await this.db.run(
             `INSERT INTO alerts (room_id, exhibit_id, type, cause, timestamp, message, created_at)
@@ -49,21 +34,13 @@ export class AlertRepository {
         return this.findById(result.lastID);
     }
 
-    /**
-     * Löscht Alerts eines gelöschten Raums.
-     * @param {number} roomId Raum-ID
-     * @returns {Promise<number>}
-     */
+    /** löscht alerts eines gelöschten raums. */
     async deleteByRoomId(roomId) {
         const result = await this.db.run("DELETE FROM alerts WHERE room_id = ?", roomId);
         return result.changes;
     }
 
-    /**
-     * Entfernt den Bezug auf ein gelöschtes Exponat.
-     * @param {number} exhibitId Exponat-ID
-     * @returns {Promise<number>}
-     */
+    /** entfernt den bezug auf ein gelöschtes exponat. */
     async clearExhibitId(exhibitId) {
         const result = await this.db.run(
             "UPDATE alerts SET exhibit_id = NULL WHERE exhibit_id = ?",
@@ -73,11 +50,7 @@ export class AlertRepository {
     }
 }
 
-/**
- * Wandelt eine Datenbankzeile in die API-Darstellung um.
- * @param {object} row Datenbankzeile
- * @returns {object}
- */
+/** wandelt eine datenbankzeile in die API-darstellung um. */
 export function mapAlert(row) {
     return {
         id: row.id,

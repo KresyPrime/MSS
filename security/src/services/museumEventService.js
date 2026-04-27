@@ -1,21 +1,12 @@
-/**
- * Verarbeitet relevante Events aus anderen Microservices.
- */
+/** verarbeitet relevante museum-ereignisse. */
 export class MuseumEventService {
-    /**
-     * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
-     * Incident-Repository
-     */
+    /** erstellt den service. */
     constructor(alertRepository, incidentRepository) {
         this.alertRepository = alertRepository;
         this.incidentRepository = incidentRepository;
     }
 
-    /**
-     * Verarbeitet ein eingehendes MQTT-Event.
-     * @param {{event: string, entity: string, id: number}} payload Eventdaten
-     */
+    /** verarbeitet ein eingehendes MQTT-ereignis. */
     async handleEvent(payload) {
         if (payload?.event !== "deleted") return;
 

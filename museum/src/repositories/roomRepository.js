@@ -1,38 +1,23 @@
-/**
- * Datenbankzugriff für Museumsräume.
- */
+/** datenbankzugriff für räume. */
 export class RoomRepository {
-    /**
-     * @param {import("sqlite").Database} db sqlite-Datenbank
-     */
+    /** erstellt das repository. */
     constructor(db) {
         this.db = db;
     }
 
-    /**
-     * Gibt alle Räume zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle räume zurück. */
     async findAll() {
         const rows = await this.db.all("SELECT * FROM rooms ORDER BY id");
         return rows.map(mapRoom);
     }
 
-    /**
-     * Sucht einen Raum anhand seiner ID.
-     * @param {number} id Raum-ID
-     * @returns {Promise<object|undefined>}
-     */
+    /** sucht einen raum per id. */
     async findById(id) {
         const row = await this.db.get("SELECT * FROM rooms WHERE id = ?", id);
         return row ? mapRoom(row) : undefined;
     }
 
-    /**
-     * Legt einen Raum an.
-     * @param {object} room Raumdaten
-     * @returns {Promise<object>}
-     */
+    /** legt einen raum an. */
     async create(room) {
         const result = await this.db.run(
             "INSERT INTO rooms (name, floor, theme, is_monitored, created_at) VALUES (?, ?, ?, ?, ?)",
@@ -46,12 +31,7 @@ export class RoomRepository {
         return this.findById(result.lastID);
     }
 
-    /**
-     * Ersetzt einen Raum vollständig.
-     * @param {number} id Raum-ID
-     * @param {object} room Neue Raumdaten
-     * @returns {Promise<object|undefined>}
-     */
+    /** ersetzt einen raum. */
     async replace(id, room) {
         const result = await this.db.run(
             "UPDATE rooms SET name = ?, floor = ?, theme = ?, is_monitored = ? WHERE id = ?",
@@ -65,22 +45,14 @@ export class RoomRepository {
         return result.changes === 0 ? undefined : this.findById(id);
     }
 
-    /**
-     * Löscht einen Raum.
-     * @param {number} id Raum-ID
-     * @returns {Promise<boolean>}
-     */
+    /** löscht einen raum. */
     async delete(id) {
         const result = await this.db.run("DELETE FROM rooms WHERE id = ?", id);
         return result.changes > 0;
     }
 }
 
-/**
- * Wandelt eine Datenbankzeile in die API-Darstellung um.
- * @param {object} row Datenbankzeile
- * @returns {object}
- */
+/** wandelt eine datenbankzeile in die API-darstellung um. */
 export function mapRoom(row) {
     return {
         id: row.id,

@@ -50,9 +50,7 @@ const server = app.listen(port, host, () => {
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
-/**
- * Beendet externe Ressourcen sauber.
- */
+/** beendet externe ressourcen sauber. */
 async function shutdown() {
     server.close();
     closeMqtt();

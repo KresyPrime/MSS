@@ -1,11 +1,7 @@
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 
-/**
- * Öffnet die sqlite-Datenbank und legt das Museum-Schema an.
- * @param {string} filename Pfad zur Datenbankdatei
- * @returns {Promise<import("sqlite").Database>}
- */
+/** öffnet die sqlite-datenbank und legt das museum-schema an. */
 export async function initializeDatabase(filename = "museum.sqlite") {
     const db = await open({
         filename,

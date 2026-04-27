@@ -1,9 +1,4 @@
-/**
- * Erlaubt Browser-Zugriffe von Swagger Editor und anderen Entwicklungswerkzeugen.
- * @param {import("express").Request} req HTTP-Request
- * @param {import("express").Response} res HTTP-Response
- * @param {import("express").NextFunction} next Nächste Middleware
- */
+/** erlaubt zugriffe aus swagger und anderen werkzeugen. */
 export function allowCors(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -17,33 +12,18 @@ export function allowCors(req, res, next) {
     next();
 }
 
-/**
- * Protokolliert eingehende HTTP-Anfragen.
- * @param {import("express").Request} req HTTP-Request
- * @param {import("express").Response} res HTTP-Response
- * @param {import("express").NextFunction} next Nächste Middleware
- */
+/** protokolliert eingehende HTTP-anfragen. */
 export function logRequests(req, res, next) {
     console.log(`${req.method} ${req.originalUrl}`);
     next();
 }
 
-/**
- * Leitet Fehler aus asynchronen Handlern an Express weiter.
- * @param {Function} handler HTTP-Handler
- * @returns {Function}
- */
+/** leitet fehler aus asynchronen handlern an express weiter. */
 export function asyncHandler(handler) {
     return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 }
 
-/**
- * Einheitliche Fehlerbehandlung.
- * @param {Error} err Fehlerobjekt
- * @param {import("express").Request} req HTTP-Request
- * @param {import("express").Response} res HTTP-Response
- * @param {import("express").NextFunction} next Nächste Middleware
- */
+/** gibt fehler einheitlich als JSON zurück. */
 export function handleErrors(err, req, res, next) {
     console.error(err);
 

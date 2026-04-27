@@ -3,10 +3,7 @@ import mqtt from "mqtt";
 let mqttClient;
 let topicPrefix = "mss/events";
 
-/**
- * Stellt optional eine Verbindung zum MQTT-Broker her.
- * @param {{broker?: string, username?: string, password?: string, topicPrefix?: string}} config MQTT-Konfiguration
- */
+/** verbindet sich optional mit dem MQTT-broker. */
 export async function connectMqtt(config) {
     topicPrefix = config.topicPrefix || topicPrefix;
 
@@ -26,12 +23,7 @@ export async function connectMqtt(config) {
     }
 }
 
-/**
- * Sendet ein Änderungs-Event fehlertolerant an den MQTT-Broker.
- * @param {string} event Ereignisname
- * @param {string} entity Entitätsname
- * @param {number} id Schlüsselwert
- */
+/** sendet ein änderungsereignis fehlertolerant an den MQTT-broker. */
 export async function publishEvent(event, entity, id) {
     const payload = JSON.stringify({ event, entity, id });
     console.log(`Event ${payload}`);
@@ -45,9 +37,7 @@ export async function publishEvent(event, entity, id) {
     }
 }
 
-/**
- * Schließt die MQTT-Verbindung.
- */
+/** schließt die MQTT-verbindung. */
 export function closeMqtt() {
     mqttClient?.end();
 }

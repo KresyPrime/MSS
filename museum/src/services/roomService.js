@@ -1,54 +1,33 @@
 import { isBlank, throwError } from "../utils.js";
 
-/**
- * Fachlogik für Räume.
- */
+/** fachlogik für räume. */
 export class RoomService {
-    /**
-     * @param {import("../repositories/roomRepository.js").RoomRepository} roomRepository Raum-Repository
-     * @param {{publishEvent: Function}} eventPublisher Event-Publisher
-     */
+    /** erstellt den service. */
     constructor(roomRepository, eventPublisher) {
         this.roomRepository = roomRepository;
         this.eventPublisher = eventPublisher;
     }
 
-    /**
-     * Gibt alle Räume zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle räume zurück. */
     async listRooms() {
         return this.roomRepository.findAll();
     }
 
-    /**
-     * Gibt einen Raum zurück.
-     * @param {number} id Raum-ID
-     * @returns {Promise<object>}
-     */
+    /** gibt einen raum zurück. */
     async getRoom(id) {
         const room = await this.roomRepository.findById(id);
         if (!room) throwError("NotFound", "Raum wurde nicht gefunden.", 404);
         return room;
     }
 
-    /**
-     * Legt einen Raum an.
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** legt einen raum an. */
     async createRoom(data) {
         const room = await this.roomRepository.create(validateRoom(data));
         await this.eventPublisher.publishEvent("created", "Room", room.id);
         return room;
     }
 
-    /**
-     * Ersetzt einen Raum.
-     * @param {number} id Raum-ID
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** ersetzt einen raum. */
     async replaceRoom(id, data) {
         const room = await this.roomRepository.replace(id, validateRoom(data));
         if (!room) throwError("NotFound", "Raum wurde nicht gefunden.", 404);
@@ -56,11 +35,7 @@ export class RoomService {
         return room;
     }
 
-    /**
-     * Löscht einen Raum.
-     * @param {number} id Raum-ID
-     * @returns {Promise<void>}
-     */
+    /** löscht einen raum. */
     async deleteRoom(id) {
         const deleted = await this.roomRepository.delete(id);
         if (!deleted) throwError("NotFound", "Raum wurde nicht gefunden.", 404);
@@ -68,11 +43,7 @@ export class RoomService {
     }
 }
 
-/**
- * Validiert Raumdaten.
- * @param {object} data Request-Daten
- * @returns {object}
- */
+/** validiert raumdaten. */
 function validateRoom(data) {
     if (!data || typeof data !== "object") {
         throwError("BadRequest", "Der Request-Body muss ein JSON-Objekt sein.", 400);

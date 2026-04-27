@@ -1,12 +1,7 @@
 import { parseId } from "../utils.js";
 import { asyncHandler } from "../middleware.js";
 
-/**
- * Registriert Raum-Endpunkte.
- * @param {import("express").Express} app Express-App
- * @param {import("../services/roomService.js").RoomService} roomService Raum-Service
- * @param {import("../services/exhibitService.js").ExhibitService} exhibitService Exponat-Service
- */
+/** registriert die raum-endpunkte. */
 export function registerRoomController(app, roomService, exhibitService) {
     app.get("/rooms", asyncHandler(async (req, res) => {
         res.status(200).json(await roomService.listRooms());

@@ -1,54 +1,33 @@
 import { isBlank, throwError } from "../utils.js";
 
-/**
- * Fachlogik für Exponate.
- */
+/** fachlogik für exponate. */
 export class ExhibitService {
-    /**
-     * @param {import("../repositories/exhibitRepository.js").ExhibitRepository} exhibitRepository Exponat-Repository
-     * @param {import("./roomService.js").RoomService} roomService Raum-Service
-     * @param {{publishEvent: Function}} eventPublisher Event-Publisher
-     */
+    /** erstellt den service. */
     constructor(exhibitRepository, roomService, eventPublisher) {
         this.exhibitRepository = exhibitRepository;
         this.roomService = roomService;
         this.eventPublisher = eventPublisher;
     }
 
-    /**
-     * Gibt alle Exponate zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle exponate zurück. */
     async listExhibits() {
         return this.exhibitRepository.findAll();
     }
 
-    /**
-     * Gibt alle Exponate eines Raumes zurück.
-     * @param {number} roomId Raum-ID
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle exponate eines raums zurück. */
     async listExhibitsByRoom(roomId) {
         await this.roomService.getRoom(roomId);
         return this.exhibitRepository.findByRoomId(roomId);
     }
 
-    /**
-     * Gibt ein Exponat zurück.
-     * @param {number} id Exponat-ID
-     * @returns {Promise<object>}
-     */
+    /** gibt ein exponat zurück. */
     async getExhibit(id) {
         const exhibit = await this.exhibitRepository.findById(id);
         if (!exhibit) throwError("NotFound", "Exponat wurde nicht gefunden.", 404);
         return exhibit;
     }
 
-    /**
-     * Legt ein Exponat an.
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** legt ein exponat an. */
     async createExhibit(data) {
         const exhibitData = await this.validateExhibit(data);
         const exhibit = await this.exhibitRepository.create(exhibitData);
@@ -56,12 +35,7 @@ export class ExhibitService {
         return exhibit;
     }
 
-    /**
-     * Ersetzt ein Exponat.
-     * @param {number} id Exponat-ID
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** ersetzt ein exponat. */
     async replaceExhibit(id, data) {
         const exhibitData = await this.validateExhibit(data);
         const exhibit = await this.exhibitRepository.replace(id, exhibitData);
@@ -70,22 +44,14 @@ export class ExhibitService {
         return exhibit;
     }
 
-    /**
-     * Löscht ein Exponat.
-     * @param {number} id Exponat-ID
-     * @returns {Promise<void>}
-     */
+    /** löscht ein exponat. */
     async deleteExhibit(id) {
         const deleted = await this.exhibitRepository.delete(id);
         if (!deleted) throwError("NotFound", "Exponat wurde nicht gefunden.", 404);
         await this.eventPublisher.publishEvent("deleted", "Exhibit", id);
     }
 
-    /**
-     * Validiert Exponatdaten.
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** validiert exponatdaten. */
     async validateExhibit(data) {
         if (!data || typeof data !== "object") {
             throwError("BadRequest", "Der Request-Body muss ein JSON-Objekt sein.", 400);

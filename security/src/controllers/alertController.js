@@ -1,11 +1,7 @@
 import { parseId } from "../utils.js";
 import { asyncHandler } from "../middleware.js";
 
-/**
- * Registriert Alert-Endpunkte.
- * @param {import("express").Express} app Express-App
- * @param {import("../services/alertService.js").AlertService} alertService Alert-Service
- */
+/** registriert die alert-endpunkte. */
 export function registerAlertController(app, alertService) {
     app.get("/alerts", asyncHandler(async (req, res) => {
         res.status(200).json(await alertService.listAlerts());

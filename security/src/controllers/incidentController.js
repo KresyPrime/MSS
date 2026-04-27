@@ -1,11 +1,7 @@
 import { parseId } from "../utils.js";
 import { asyncHandler } from "../middleware.js";
 
-/**
- * Registriert Incident-Endpunkte.
- * @param {import("express").Express} app Express-App
- * @param {import("../services/incidentService.js").IncidentService} incidentService Incident-Service
- */
+/** registriert die incident-endpunkte. */
 export function registerIncidentController(app, incidentService) {
     app.get("/incidents", asyncHandler(async (req, res) => {
         res.status(200).json(await incidentService.listIncidents());

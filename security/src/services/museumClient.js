@@ -1,22 +1,13 @@
 import { throwError } from "../utils.js";
 
-/**
- * Fehlertoleranter REST-Client für lesende Zugriffe auf den Museum-Service.
- */
+/** fehlertoleranter REST-zugriff auf den museum-service. */
 export class MuseumClient {
-    /**
-     * @param {string|undefined} baseUrl Basis-URL des Museum-Service
-     */
+    /** erstellt den zugriff. */
     constructor(baseUrl) {
         this.baseUrl = baseUrl?.replace(/\/$/, "");
     }
 
-    /**
-     * Prüft Raum und optionales Exponat im Museum-Service.
-     * @param {number} roomId Raum-ID
-     * @param {number|undefined} exhibitId Exponat-ID
-     * @returns {Promise<void>}
-     */
+    /** prüft raum und optionales exponat im museum-service. */
     async validateReferences(roomId, exhibitId) {
         const room = await this.getResource(`/rooms/${roomId}`);
         if (room.status === "not-found") {
@@ -37,11 +28,7 @@ export class MuseumClient {
         }
     }
 
-    /**
-     * Ruft eine Ressource fehlertolerant ab.
-     * @param {string} path API-Pfad
-     * @returns {Promise<{status: string, data?: object}>}
-     */
+    /** ruft eine ressource fehlertolerant ab. */
     async getResource(path) {
         if (!this.baseUrl) {
             console.warn("MUSEUM_SERVICE_URL ist nicht gesetzt. Referenzen werden nicht remote geprüft.");

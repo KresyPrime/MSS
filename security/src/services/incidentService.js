@@ -4,17 +4,9 @@ import { ALERT_TYPES, INCIDENT_CAUSES } from "./alertRuleEngine.js";
 const INCIDENT_STATUSES = ["open", "investigating", "confirmed", "false_alarm", "resolved"];
 const INCIDENT_SEVERITIES = ["low", "medium", "high", "critical"];
 
-/**
- * Fachlogik für Incidents.
- */
+/** fachlogik für incidents. */
 export class IncidentService {
-    /**
-     * @param {import("../repositories/incidentRepository.js").IncidentRepository} incidentRepository
-     * Incident-Repository
-     * @param {import("../repositories/alertRepository.js").AlertRepository} alertRepository Alert-Repository
-     * @param {import("./museumClient.js").MuseumClient} museumClient Museum-Client
-     * @param {{publishEvent: Function}} eventPublisher Event-Publisher
-     */
+    /** erstellt den service. */
     constructor(incidentRepository, alertRepository, museumClient, eventPublisher) {
         this.incidentRepository = incidentRepository;
         this.alertRepository = alertRepository;
@@ -22,30 +14,19 @@ export class IncidentService {
         this.eventPublisher = eventPublisher;
     }
 
-    /**
-     * Gibt alle Incidents zurück.
-     * @returns {Promise<object[]>}
-     */
+    /** gibt alle incidents zurück. */
     async listIncidents() {
         return this.incidentRepository.findAll();
     }
 
-    /**
-     * Gibt ein Incident zurück.
-     * @param {number} id Incident-ID
-     * @returns {Promise<object>}
-     */
+    /** gibt ein incident zurück. */
     async getIncident(id) {
         const incident = await this.incidentRepository.findById(id);
         if (!incident) throwError("NotFound", "Incident wurde nicht gefunden.", 404);
         return incident;
     }
 
-    /**
-     * Legt ein manuelles Incident an.
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** legt ein manuelles incident an. */
     async createIncident(data) {
         const incidentData = await this.validateIncident(data, true);
         const incident = await this.incidentRepository.create(incidentData);
@@ -53,12 +34,7 @@ export class IncidentService {
         return incident;
     }
 
-    /**
-     * Aktualisiert ein Incident.
-     * @param {number} id Incident-ID
-     * @param {object} data Request-Daten
-     * @returns {Promise<object>}
-     */
+    /** aktualisiert ein incident. */
     async updateIncident(id, data) {
         const update = validateIncidentUpdate(data);
         const incident = await this.incidentRepository.update(id, update);
@@ -67,23 +43,14 @@ export class IncidentService {
         return incident;
     }
 
-    /**
-     * Löscht ein Incident.
-     * @param {number} id Incident-ID
-     * @returns {Promise<void>}
-     */
+    /** löscht ein incident. */
     async deleteIncident(id) {
         const deleted = await this.incidentRepository.delete(id);
         if (!deleted) throwError("NotFound", "Incident wurde nicht gefunden.", 404);
         await this.eventPublisher.publishEvent("deleted", "Incident", id);
     }
 
-    /**
-     * Validiert manuelle Incident-Daten.
-     * @param {object} data Request-Daten
-     * @param {boolean} checkRemoteReferences Remote-Referenzen prüfen
-     * @returns {Promise<object>}
-     */
+    /** validiert manuelle incident-daten. */
     async validateIncident(data, checkRemoteReferences) {
         if (!data || typeof data !== "object") {
             throwError("BadRequest", "Der Request-Body muss ein JSON-Objekt sein.", 400);
@@ -129,11 +96,7 @@ export class IncidentService {
     }
 }
 
-/**
- * Prüft, ob ein manuelles Incident zum verknüpften Alert passt.
- * @param {object} alert Alertdaten
- * @param {object} incident Incidentdaten
- */
+/** prüft, ob ein incident zum verknüpften alert passt. */
 function validateAlertReference(alert, incident) {
     if (incident.roomId !== alert.roomId) {
         throwError("BadRequest", "Das Incident muss zum Raum des Alerts gehören.", 400);
@@ -145,11 +108,7 @@ function validateAlertReference(alert, incident) {
     }
 }
 
-/**
- * Validiert Incident-Updates.
- * @param {object} data Request-Daten
- * @returns {object}
- */
+/** validiert incident-updates. */
 function validateIncidentUpdate(data) {
     if (!data || typeof data !== "object") {
         throwError("BadRequest", "Der Request-Body muss ein JSON-Objekt sein.", 400);
@@ -164,12 +123,7 @@ function validateIncidentUpdate(data) {
     };
 }
 
-/**
- * Validiert die resolvedAt-Statusregel.
- * @param {string} status Incident-Status
- * @param {string|undefined} resolvedAt Abschlusszeitpunkt
- * @returns {string|undefined}
- */
+/** validiert die resolvedAt-regel. */
 function validateResolvedAt(status, resolvedAt) {
     if (status === "resolved") {
         if (isBlank(resolvedAt) || Number.isNaN(Date.parse(resolvedAt))) {
