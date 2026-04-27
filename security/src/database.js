@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Datenbank-Dokumentation; Kommentar ergänzt, der Alert- und Incident-Schema kurz erklärt.
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 

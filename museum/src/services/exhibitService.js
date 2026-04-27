@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Service-Dokumentation; Kommentar ergänzt, der Exponatlogik, Validierung und Raumbezug abgrenzt.
 import { isBlank, throwError } from "../utils.js";
 
 /** fachlogik für exponate. */

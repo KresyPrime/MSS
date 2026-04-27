@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Controller-Doku; Kommentar ergänzt, der Einstiegspunkt und Healthcheck beschreibt.
 /** registriert serviceinfos und healthcheck. */
 export function registerServiceController(app) {
     app.get("/", getIndex);

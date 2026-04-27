@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Repository-Doku; Kommentar ergänzt, der Datenbankzugriffe fuer Exponate kennzeichnet.
 /** datenbankzugriff für exponate. */
 export class ExhibitRepository {
     /** erstellt das repository. */

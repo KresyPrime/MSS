@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Repository-Doku; Kommentar ergänzt, der Datenbankzugriffe fuer Incidents kennzeichnet.
 /** datenbankzugriff für incidents. */
 export class IncidentRepository {
     /** erstellt das repository. */

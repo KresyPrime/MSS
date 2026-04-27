@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Event-Doku; Kommentar ergänzt, der Reaktion auf geloeschte Museum-Daten einordnet.
 /** verarbeitet relevante museum-ereignisse. */
 export class MuseumEventService {
     /** erstellt den service. */

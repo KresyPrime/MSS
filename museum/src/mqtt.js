@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Event-Kommunikation; Kommentar ergänzt, der fehlertolerantes MQTT-Publishing beschreibt.
 import mqtt from "mqtt";
 
 let mqttClient;

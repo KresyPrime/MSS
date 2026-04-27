@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Hilfsfunktionen-Doku; Kommentar ergänzt, der Fehler- und ID-Helfer zusammenfasst.
 /** erzeugt einen fehler mit HTTP-statuscode. */
 export function createError(name, message, httpStatus) {
     const error = new Error(message);

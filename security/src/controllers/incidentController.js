@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Controller-Doku; Kommentar ergänzt, der REST-Routen fuer Incidents zusammenfasst.
 import { parseId } from "../utils.js";
 import { asyncHandler } from "../middleware.js";
 

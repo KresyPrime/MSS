@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Datenbank-Dokumentation; Kommentar ergänzt, der Schemaaufbau und SQLite-Initialisierung benennt.
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 

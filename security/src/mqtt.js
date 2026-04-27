@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Event-Kommunikation; Kommentar ergänzt, der MQTT-Abo und Publishing im Security-Service markiert.
 import mqtt from "mqtt";
 
 let mqttClient;

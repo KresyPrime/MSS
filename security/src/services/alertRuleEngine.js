@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Regel-Doku; Kommentar ergänzt, der Schweregrad-Regeln fuer Alerts zusammenfasst.
 export const ALERT_TYPES = [
     "motion",
     "glass_break",

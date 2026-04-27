@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Service-Dokumentation; Kommentar ergänzt, der Incident-Validierung und Statusregeln markiert.
 import { isBlank, throwError } from "../utils.js";
 import { ALERT_TYPES, INCIDENT_CAUSES } from "./alertRuleEngine.js";
 

@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Repository-Doku; Kommentar ergänzt, der Datenbankzugriffe fuer Raeume kennzeichnet.
 /** datenbankzugriff für räume. */
 export class RoomRepository {
     /** erstellt das repository. */

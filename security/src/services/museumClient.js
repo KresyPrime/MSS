@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Integrations-Doku; Kommentar ergänzt, der fehlertolerante Museum-Service-Prüfung beschreibt.
 import { throwError } from "../utils.js";
 
 /** fehlertoleranter REST-zugriff auf den museum-service. */

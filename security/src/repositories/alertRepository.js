@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Repository-Doku; Kommentar ergänzt, der Datenbankzugriffe fuer Alerts kennzeichnet.
 /** datenbankzugriff für alerts. */
 export class AlertRepository {
     /** erstellt das repository. */

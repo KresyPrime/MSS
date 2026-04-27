@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Service-Dokumentation; Kommentar ergänzt, der Raumlogik, Validierung und Events abgrenzt.
 import { isBlank, throwError } from "../utils.js";
 
 /** fachlogik für räume. */

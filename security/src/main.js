@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Startstruktur; Kommentar ergänzt, der Security-Setup, MQTT und REST-Routen zusammenfasst.
 import dotenv from "dotenv";
 import express from "express";
 

@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Express-Doku; Kommentar ergänzt, der CORS, Logging und Fehlerausgabe kurz kennzeichnet.
 /** erlaubt zugriffe aus swagger und anderen werkzeugen. */
 export function allowCors(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");

@@ -1,3 +1,4 @@
+// KI-Hinweis: Prompt zur Startstruktur; Kommentar ergänzt, der Service-Setup und Controller-Verdrahtung einordnet.
 import dotenv from "dotenv";
 import express from "express";
 
